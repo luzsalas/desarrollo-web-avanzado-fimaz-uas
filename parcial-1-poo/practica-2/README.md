@@ -38,6 +38,8 @@ Esto permite que Admin use todos los métodos de Usuario (getNombre, getCorreo) 
 3. Abre: http://localhost/
 
 ## Evidencia de Ejecución
+![evidencia2](https://github.com/user-attachments/assets/2ac3c26a-1307-4ac1-8373-846e2b6118bb)
+
 
 Al abrir index.php se muestra:
 
@@ -48,5 +50,6 @@ Nombre: Luz Salas
 Correo: luzanettesalaspalomares@gmail.com
 Rol: Administrador
 ```
+
 
 El objeto Admin usa métodos heredados (getNombre, getCorreo) y su propio método (getRol).
