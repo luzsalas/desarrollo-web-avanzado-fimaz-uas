@@ -16,6 +16,9 @@ Clase Usuario con:
 - Usuario.php - La clase Usuario
 - index.php - Prueba de la clase
 
+## Evidencia en navegador
+![evidencia](https://github.com/user-attachments/assets/2974358d-9adc-47c6-b9e9-82e6149320d0)
+
 
 ## Ejemplo de uso
 
@@ -23,4 +26,5 @@ Clase Usuario con:
 $usuario = new Usuario("Luz Salas", "luzanettesalaspalomares@gmail.com");
 echo $usuario->getNombre();  
 echo $usuario->getCorreo();  
+
 ```
