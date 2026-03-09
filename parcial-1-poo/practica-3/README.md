@@ -33,6 +33,7 @@ README.md
 
 ## Evidencia de Manejo de Errores
 
+![evidencia3](https://github.com/user-attachments/assets/654882f7-a28d-494b-a6fd-2b17c613c0a4)
 
 
 
@@ -41,4 +42,5 @@ README.md
 Herencia con extends` 
 Validación de datos  
 Manejo de errores con try/catch 
+
 Encapsulamiento
