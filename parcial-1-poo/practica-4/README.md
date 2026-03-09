@@ -48,6 +48,7 @@ practica-4/
 3. Abre en navegador: http://localhost/
 
 ## Evidencia esperada
+![evidencia4](https://github.com/user-attachments/assets/1c8dc2be-6c32-429b-81c2-fc38755c7699)
 
 
 ### Tabla HTML con usuarios:
@@ -70,4 +71,5 @@ Error controlado: Correo invalido: correo-malo
 - Herencia (extends)
 - Polimorfismo (getRol en todas las clases)
 - Validacion de datos
+
 - Manejo de excepciones (try/catch)
