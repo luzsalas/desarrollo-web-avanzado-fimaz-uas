@@ -1,3 +1,3 @@
 # Práctica 2 - Herencia en PHP
-
-Esta práctica implementa herencia en PHP mediante una clase `Admin` que extiende a `Usuario` usando `extends`, heredando sus métodos (`getNombre`, `getCorreo`) y añadiendo su propio método `getRol()`. Para ejecutarla, copia el proyecto a `htdocs`, inicia Apache y abre `http://localhost/`; al cargar `index.php` se mostrarán los datos del administrador, demostrando el uso de métodos heredados y propios en un mismo objeto.
+ 
+Básicamente se crea una clase `Admin` que hereda de `Usuario` usando `extends`, así Admin puede usar los métodos de Usuario (`getNombre`, `getCorreo`) sin tener que redefinirlos, y además tiene su propio método `getRol()`. Para probarlo nada más copia el proyecto a `htdocs`, prendes Apache y entras a `http://localhost/`.
