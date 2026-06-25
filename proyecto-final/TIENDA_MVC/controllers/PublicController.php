@@ -4,7 +4,6 @@ namespace Controllers;
 //gestiona la vista del catálogo accesible para todos los usuarios visitantes,
 //permitiendo la visualización general de los productos disponibles y procesando
 //las peticiones de búsqueda filtradas por nombre o descripción.
-//por: Marysa Quiñonez, Carolina Vazquez, Luz Salas y Mia Rios
 use Models\ProductoModel;
 
 class PublicController
@@ -12,9 +11,15 @@ class PublicController
     public function catalogo(): void
     {
         $termino = trim($_GET['buscar'] ?? '');
+        $porPagina = 6;
+        $paginaActual = max(1, (int)($_GET['pagina'] ?? 1));
+        $offset = ($paginaActual - 1) * $porPagina;
+
         $productoModel = new ProductoModel();
-        $productos = $productoModel->buscarPublico($termino);
+        $totalProductos = $productoModel->contarPublico($termino);
+        $productos = $productoModel->buscarPublicoPaginado($termino, $porPagina, $offset);
+        $totalPaginas = (int)ceil($totalProductos / $porPagina);
+
         require_once __DIR__ . '/../views/public/catalogo.php';
     }
 }
-?>
