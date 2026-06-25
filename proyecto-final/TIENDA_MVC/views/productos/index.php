@@ -1,17 +1,15 @@
 <?php 
-
 //Muestra el panel de control principal con el listado tabular de todos los
 //productos registrados para el administrador, permitiendo el acceso rápido
 //a la creación, edición, eliminación y cierre de sesión
-//por: Marysa Quiñonez, Carolina Vazquez, Luz Salas y Mia Rios
 
 require_once __DIR__ . '/../layouts/header.php'; ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Administración de productos</h2>
     <div>
-        <a href="index.php?route=productos/create" class="btn btn-success">Nuevo producto</a>
-        <a href="index.php?route=logout" class="btn btn-danger">Cerrar sesión</a>
+        <a href="/TIENDA_MVC/productos/create" class="btn btn-success">Nuevo producto</a>
+        <a href="/TIENDA_MVC/logout" class="btn btn-danger">Cerrar sesión</a>
     </div>
 </div>
 
@@ -37,11 +35,12 @@ require_once __DIR__ . '/../layouts/header.php'; ?>
                 <td>$<?= number_format((float)$producto['precio_venta'], 2); ?></td>
                 <td><?= (int)$producto['existencia']; ?></td>
                 <td>
-                    <a href="index.php?route=productos/edit&id=<?= (int)$producto['id']; ?>" 
+                    <a href="/TIENDA_MVC/productos/edit?id=<?= (int)$producto['id']; ?>" 
                        class="btn btn-primary btn-sm">Editar</a>
 
-                    <form action="index.php?route=productos/delete" method="POST" class="d-inline">
+                    <form action="/TIENDA_MVC/productos/delete" method="POST" class="d-inline">
                         <input type="hidden" name="id" value="<?= (int)$producto['id']; ?>">
+                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?? '' ?>">
                         <button type="submit" class="btn btn-danger btn-sm" 
                                 onclick="return confirm('¿Deseas eliminar este producto?');">
                             Eliminar
