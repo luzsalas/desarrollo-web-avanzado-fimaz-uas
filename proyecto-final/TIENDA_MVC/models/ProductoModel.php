@@ -4,7 +4,6 @@ namespace Models;
 //Gestiona la persistencia y todas las operaciones directas en la base de datos
 //para la tabla de productos CRUD completo, filtros de búsqueda y validaciones 
 //específicas de negocio comola verificación de duplicados de SKU.
-//por: Marysa Quiñonez, Carolina Vazquez, Luz Salas y Mia Rios
 use Config\Database;
 use PDO;
 use PDOException;
@@ -41,6 +40,45 @@ class ProductoModel
             $stmt = $this->conexion->prepare($sql);
             $busqueda = '%' . $termino . '%';
             $stmt->bindParam(':termino', $busqueda);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    public function contarPublico(string $termino = ''): int
+    {
+        try {
+            if (trim($termino) === '') {
+                $stmt = $this->conexion->query('SELECT COUNT(*) FROM productos');
+            } else {
+                $sql = 'SELECT COUNT(*) FROM productos WHERE nombre LIKE :termino OR descripcion LIKE :termino';
+                $stmt = $this->conexion->prepare($sql);
+                $busqueda = '%' . $termino . '%';
+                $stmt->bindParam(':termino', $busqueda);
+                $stmt->execute();
+            }
+            return (int)$stmt->fetchColumn();
+        } catch (PDOException $e) {
+            return 0;
+        }
+    }
+
+    public function buscarPublicoPaginado(string $termino = '', int $limite = 6, int $offset = 0): array
+    {
+        try {
+            if (trim($termino) === '') {
+                $sql = 'SELECT * FROM productos ORDER BY id DESC LIMIT :limite OFFSET :offset';
+                $stmt = $this->conexion->prepare($sql);
+            } else {
+                $sql = 'SELECT * FROM productos WHERE nombre LIKE :termino OR descripcion LIKE :termino ORDER BY id DESC LIMIT :limite OFFSET :offset';
+                $stmt = $this->conexion->prepare($sql);
+                $busqueda = '%' . $termino . '%';
+                $stmt->bindParam(':termino', $busqueda);
+            }
+            $stmt->bindParam(':limite', $limite, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchAll();
         } catch (PDOException $e) {
