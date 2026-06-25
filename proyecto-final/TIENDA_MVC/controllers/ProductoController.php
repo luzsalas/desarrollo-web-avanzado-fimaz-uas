@@ -4,7 +4,6 @@ namespace Controllers;
 //gestiona el ciclo de vida completo de los productos en la tienda, incluyendo
 //la validación de datos, control de sesiones, operaciones CRUD, procesamiento
 //seguro de imágenes en el servidor y una API en formato JSON
-//por: Marysa Quiñonez, Carolina Vazquez, Luz Salas y Mia Rios
 
 use Models\ProductoModel;
 
@@ -29,6 +28,32 @@ class ProductoController
         }
     }
 
+    // Genera y almacena un token CSRF en sesión
+    private function generarTokenCsrf(): string
+    {
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    // Valida que el token CSRF del formulario coincida con el de la sesión
+    private function validarTokenCsrf(): bool
+    {
+        $tokenFormulario = $_POST['csrf_token'] ?? '';
+        $tokenSesion = $_SESSION['csrf_token'] ?? '';
+        return $tokenFormulario !== '' && hash_equals($tokenSesion, $tokenFormulario);
+    }
+
+    // Registra las acciones del admin en el archivo bitacora.log
+    private function registrarActividad(string $accion): void
+    {
+        $usuario = $_SESSION['admin']['username'] ?? 'Desconocido';
+        $fecha = date('d/m/Y H:i:s');
+        $linea = "[$fecha] $accion — usuario: $usuario" . PHP_EOL;
+        file_put_contents(__DIR__ . '/../bitacora.log', $linea, FILE_APPEND);
+    }
+
     public function index(): void
     {
         $this->verificarSesion();
@@ -39,12 +64,19 @@ class ProductoController
     public function create(): void
     {
         $this->verificarSesion();
+        $csrfToken = $this->generarTokenCsrf();
         require_once __DIR__ . '/../views/productos/create.php';
     }
 
     public function store(): void
     {
         $this->verificarSesion();
+
+        if (!$this->validarTokenCsrf()) {
+            $_SESSION['error'] = 'Error de seguridad: token CSRF inválido.';
+            header('Location: index.php?route=productos/create');
+            exit;
+        }
 
         $data = [
             'sku' => trim($_POST['sku'] ?? ''),
@@ -111,7 +143,7 @@ class ProductoController
         $fileTmpPath = $_FILES['imagen']['tmp_name'];
         $fileName = $_FILES['imagen']['name'];
         $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-        
+
         $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
         if (!in_array($fileExtension, $extensionesPermitidas)) {
             $_SESSION['error'] = 'Formato de imagen no permitido (Solo JPG, PNG, WEBP).';
@@ -119,14 +151,11 @@ class ProductoController
             exit;
         }
 
-        // Generar nombre único usando md5 y marcas de tiempo
-        $nuevoNombreImagen = md5(time() . $fileName) . '.' . $fileExtension;
-        
-        // RUTA CORREGIDA: Apunta a views/img/
-        $rutaDestino = __DIR__ . '/../views/img/' . $nuevoNombreImagen;
+        // Se guarda con el nombre original tal cual
+        $rutaDestino = __DIR__ . '/../views/img/' . $fileName;
 
         if (move_uploaded_file($fileTmpPath, $rutaDestino)) {
-            $data['imagen'] = $nuevoNombreImagen; // Se guarda para el modelo
+            $data['imagen'] = $fileName;
         } else {
             $_SESSION['error'] = 'Error al guardar la imagen en el servidor.';
             header('Location: index.php?route=productos/create');
@@ -135,6 +164,7 @@ class ProductoController
 
         if ($this->productoModel->crear($data)) {
             $_SESSION['success'] = 'Producto registrado correctamente.';
+            $this->registrarActividad('Registró el producto con SKU: ' . $data['sku']);
         } else {
             $_SESSION['error'] = 'No fue posible registrar el producto.';
         }
@@ -156,6 +186,7 @@ class ProductoController
             exit;
         }
 
+        $csrfToken = $this->generarTokenCsrf();
         require_once __DIR__ . '/../views/productos/edit.php';
     }
 
@@ -164,6 +195,12 @@ class ProductoController
         $this->verificarSesion();
 
         $id = (int)($_POST['id'] ?? 0);
+
+        if (!$this->validarTokenCsrf()) {
+            $_SESSION['error'] = 'Error de seguridad: token CSRF inválido.';
+            header('Location: index.php?route=productos/edit&id=' . $id);
+            exit;
+        }
 
         // Obtenemos los datos actuales del producto antes de sobreescribir
         $productoActual = $this->productoModel->obtenerPorId($id);
@@ -240,7 +277,7 @@ class ProductoController
             $fileTmpPath = $_FILES['imagen']['tmp_name'];
             $fileName = $_FILES['imagen']['name'];
             $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            
+
             $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
             if (!in_array($fileExtension, $extensionesPermitidas)) {
                 $_SESSION['error'] = 'Formato de imagen no permitido (Solo JPG, PNG, WEBP).';
@@ -248,18 +285,16 @@ class ProductoController
                 exit;
             }
 
-            $nuevoNombreImagen = md5(time() . $fileName) . '.' . $fileExtension;
-            
-            // RUTA CORREGIDA: Apunta a views/img/
-            $rutaDestino = __DIR__ . '/../views/img/' . $nuevoNombreImagen;
+            // Se guarda con el nombre original tal cual
+            $rutaDestino = __DIR__ . '/../views/img/' . $fileName;
 
             if (move_uploaded_file($fileTmpPath, $rutaDestino)) {
-                // RUTA CORREGIDA: Eliminar del servidor la imagen vieja desde views/img/
+                // Eliminar del servidor la imagen vieja desde views/img/
                 if (!empty($productoActual['imagen']) && file_exists(__DIR__ . '/../views/img/' . $productoActual['imagen'])) {
                     unlink(__DIR__ . '/../views/img/' . $productoActual['imagen']);
                 }
-                
-                $data['imagen'] = $nuevoNombreImagen; // Reemplazamos con el nuevo nombre
+
+                $data['imagen'] = $fileName;
             } else {
                 $_SESSION['error'] = 'Error al guardar la nueva imagen en el servidor.';
                 header('Location: index.php?route=productos/edit&id=' . $id);
@@ -269,6 +304,7 @@ class ProductoController
 
         if ($this->productoModel->actualizar($id, $data)) {
             $_SESSION['success'] = 'Producto actualizado correctamente.';
+            $this->registrarActividad('Actualizó el producto con SKU: ' . $data['sku']);
         } else {
             $_SESSION['error'] = 'No fue posible actualizar el producto.';
         }
@@ -280,6 +316,12 @@ class ProductoController
     public function delete(): void
     {
         $this->verificarSesion();
+
+        if (!$this->validarTokenCsrf()) {
+            $_SESSION['error'] = 'Error de seguridad: token CSRF inválido.';
+            header('Location: index.php?route=productos');
+            exit;
+        }
 
         $id = (int)($_POST['id'] ?? 0);
 
@@ -297,6 +339,7 @@ class ProductoController
 
         if ($this->productoModel->eliminar($id)) {
             $_SESSION['success'] = 'Producto eliminado correctamente.';
+            $this->registrarActividad('Eliminó el producto con ID: ' . $id);
         } else {
             $_SESSION['error'] = 'No fue posible eliminar el producto.';
         }
@@ -306,15 +349,15 @@ class ProductoController
     }
 
     public function apiProductos(): void
-{
-    header('Content-Type: application/json; charset=utf-8');
+    {
+        header('Content-Type: application/json; charset=utf-8');
 
-    $productos = $this->productoModel->obtenerTodos();
+        $productos = $this->productoModel->obtenerTodos();
 
-    echo json_encode([
-        'success' => true,
-        'total' => count($productos),
-        'data' => $productos
-    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-}
+        echo json_encode([
+            'success' => true,
+            'total' => count($productos),
+            'data' => $productos
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    }
 }
