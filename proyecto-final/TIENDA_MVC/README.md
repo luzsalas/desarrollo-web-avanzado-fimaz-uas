@@ -1,46 +1,28 @@
-# Tienda MVC - Desarrollo Web Avanzado
+# Tienda MVC — PHP
 
-Sistema de gestión y catálogo de productos desarrollado bajo la arquitectura *MVC (Modelo-Vista-Controlador)* en PHP nativo, aplicando buenas prácticas de programación orientada a objetos (POO), seguridad y persistencia de datos.
+Sistema de catálogo y gestión de productos en PHP puro con arquitectura MVC.
 
-# Características del Proyecto
+## Tecnologías
+- PHP 8, PDO, MySQL
+- Bootstrap 5.3
+- Apache (.htaccess)
 
-- *Arquitectura MVC Estricta:* Separación clara entre la lógica de negocio, el acceso a datos y la interfaz de usuario.
-- *Persistencia con PDO:* Conexión segura a la base de datos MySQL utilizando PDO y manejo de excepciones con bloques try-catch.
-- *Seguridad Avanzada:*
-  - *Protección CSRF:* Implementación de tokens de seguridad aleatorios en formularios críticos para evitar ataques de falsificación de peticiones en sitios cruzados.
-  - *Control de Sesiones:* Restricción de acceso al panel de administración mediante validación de sesiones activas.
-- *Rutas Amigables (.htaccess):* Configuración de URLs limpias mediante el motor de reescritura de Apache (mod_rewrite), eliminando el uso visible de index.php?route=.
-- *Catálogo Público Paginado:* Vista pública con paginación estricta de 4 en 4 productos.
-- *Log (Bitácora) de Auditoría:* Sistema automático que registra en un archivo físico (bitacora.log) las acciones críticas del administrador (Crear, Editar, Eliminar) con marca de tiempo y usuario.
+## Características
+- Arquitectura MVC estricta
+- Protección CSRF en formularios
+- URLs limpias 
+- Catálogo público con buscador
+- Bitácora de acciones del admin 
 
----
+## Instalación
+1. Copia `TIENDA_MVC` en `C:/xampp/htdocs/`
+2. Importa `database.sql` en phpMyAdmin
+3. Accede a `http://localhost/TIENDA_MVC/catalogo`
 
-# Tecnologías Utilizadas
+## Credenciales
+- Usuario: `admin`
+- Contraseña: `admin123`
 
-- *Backend:* PHP 8.x (POO, Namespaces, Autoload)
-- *Frontend:* HTML5, CSS3, Bootstrap 5.3 (vía CDN)
-- *Base de Datos:* MySQL
-- *Servidor:* Apache (.htaccess)
-
----
-
-# Estructura del Proyecto
-
-```text
-TIENDA_MVC/
-│
-├── config/             # Configuración de base de datos y Autoload
-├── Controllers/        # Controladores (Auth, Producto, Public)
-├── Models/             # Modelos de datos (Interacción con PDO)
-├── views/              # Vistas de la aplicación (HTML/Bootstrap)
-│   ├── layouts/        # Cabecera (header) y Pie de página (footer)
-│   ├── productos/      # Vistas del panel de administración
-│   └── public/         # Vista del catálogo general
-│
-├── .htaccess           # Configuración de rutas amigables
-├── index.php           # Enrutador principal (Front Controller)
-└── bitacora.log        # Archivo log de auditoría del administrador
-
-#Uso de la Bitácora (Log)
-El sistema genera de forma automática un archivo bitacora.log en la raíz en cuanto el administrador realiza una operación de escritura o borrado exitosa. El formato registrado es el siguiente:
-[AÑO-MES-DÍA HORA] USUARIO: correo@admin.com | ACCIÓN: [CREAR/EDITAR/ELIMINAR] | DETALLE: Descripción del cambio
+## Autora
+Luz Anette Salas Palomares
+LISI 3-1
