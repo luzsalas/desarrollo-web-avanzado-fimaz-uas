@@ -3,7 +3,6 @@ namespace Models;
 //Este es el modelo de usuario
 //Gestiona la persistencia y las consultas directas en la base de datos para la 
 //autenticación y control de usuarios dentro del sistema
-//por: Marysa Quiñonez, Carolina Vazquez, Luz Salas y Mia Rios
 use Config\Database;
 use PDO;
 use PDOException;
