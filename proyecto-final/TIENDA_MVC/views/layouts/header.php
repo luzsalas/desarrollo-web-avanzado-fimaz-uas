@@ -3,8 +3,6 @@
 //Define la estructura inicial del documento HTML5, incluye Bootstrap 5, 
 //inicializa las sesiones globales y gestiona la barra de navegación pública 
 //junto con las alertas del sistema para mensajes de éxito o error.
-//por: Marysa Quiñonez, Carolina Vazquez, Luz Salas y Mia Rios
-
 if (session_status() === PHP_SESSION_NONE) session_start(); ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -17,21 +15,19 @@ if (session_status() === PHP_SESSION_NONE) session_start(); ?>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="index.php?route=catalogo">Tienda MVC</a>
+        <a class="navbar-brand" href="/TIENDA_MVC/catalogo">Tienda MVC</a>
         <div>
-            <a class="btn btn-outline-light btn-sm me-2" href="index.php?route=catalogo">Catálogo</a>
-            <a class="btn btn-warning btn-sm" href="index.php?route=login">Administrador</a>
+            <a class="btn btn-outline-light btn-sm me-2" href="/TIENDA_MVC/catalogo">Catálogo</a>
+            <a class="btn btn-warning btn-sm" href="/TIENDA_MVC/login">Administrador</a>
         </div>
     </div>
 </nav>
-
 <div class="container mt-4">
     <?php if (isset($_SESSION['success'])): ?>
         <div class="alert alert-success">
             <?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
         </div>
     <?php endif; ?>
-
     <?php if (isset($_SESSION['error'])): ?>
         <div class="alert alert-danger">
             <?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
